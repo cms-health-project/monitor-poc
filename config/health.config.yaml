@@ -1,0 +1,11 @@
+storage:
+  type: filesystem
+  options:
+    directory: _storage
+
+alerting:
+  channels:
+    - type: email
+      options:
+        emailAddresses:
+          - nils.langner@startwind.io
