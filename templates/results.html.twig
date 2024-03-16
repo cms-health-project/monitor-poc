@@ -1,0 +1,62 @@
+<html>
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+<div class="content-center flex items-center justify-center">
+    <div class="px-4 sm:px-6 lg:px-8" style="width: 1200px">
+        <div class="mt-8 flow-root">
+            <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                    <table class="min-w-full divide-y divide-gray-300">
+                        <thead>
+                        <tr>
+                            <th scope="col"
+                                class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-0">
+                                Endpoint
+                            </th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Status
+                            </th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Last
+                                Status Change
+                            </th>
+                            <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                Error messages
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                        {% for endpoint, status in healthStatuses %}
+                            <tr>
+                                <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0 align-top">
+                                    {{ endpoint }}
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 align-top">
+                                <span class="{% if status.status.status == 'fail' %}bg-red-500 text-white{% endif %} rounded p-1">
+                                {{ status.status.status }}
+                                </span>
+                                </td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 align-top">{{ status.status._internal.status_since | date('Y-m-d H:i:s') }}</td>
+                                <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    {% if status.errors | length > 0 %}
+                                        <ul>
+                                            {% for error in status.errors %}
+                                                <li>{{ error }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+
+                        <!-- More people... -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
