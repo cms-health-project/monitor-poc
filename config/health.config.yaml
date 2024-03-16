@@ -1,0 +1,13 @@
+storage:
+  type: filesystem
+  options:
+    directory: _storage
+
+alerting:
+  channels:
+    - type: email
+      constraint: onStatusChange
+      options:
+        emailAddresses:
+          - nils.langner@startwind.io
+

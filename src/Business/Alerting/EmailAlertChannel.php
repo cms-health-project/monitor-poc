@@ -4,18 +4,22 @@ namespace App\Business\Alerting;
 
 class EmailAlertChannel implements AlertChannel
 {
-    private string $emailAddress;
+    const ALERT_CHANNEL_IDENTIFIER = 'email';
+
+    private array $emailAddresses;
 
     /**
-     * @param string $emailAddress
+     * @param array $emailAddresses
      */
-    public function __construct(string $emailAddress)
+    public function __construct(array $emailAddresses)
     {
-        $this->emailAddress = $emailAddress;
+        $this->emailAddresses = $emailAddresses;
     }
 
     public function sendAlert(array $healthCheckResult): void
     {
-        echo "send email to " . $this->emailAddress;
+        foreach ($this->emailAddresses as $emailAddress) {
+            echo "send email to " . $emailAddress;
+        }
     }
 }
