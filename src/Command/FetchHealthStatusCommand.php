@@ -88,7 +88,11 @@ class FetchHealthStatusCommand extends Command
     {
         $config = Yaml::parse(file_get_contents($configFile));
 
-        $channels = [];
+        $channels = [
+            AlertChannel::CONSTRAINT_FAILED => [],
+            AlertChannel::CONSTRAINT_ALL => [],
+            AlertChannel::CONSTRAINT_ON_CHANGE => [],
+        ];
 
         foreach ($config['alerting']['channels'] as $channel) {
             $channels[$channel['constraint']][] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options'], $this->twig);
