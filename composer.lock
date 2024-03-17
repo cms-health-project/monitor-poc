@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ebb982edd95bf64f1432e8f1325ec46a",
+    "content-hash": "610a5d71ade3425c5951d6aa793a8e08",
     "packages": [
         {
             "name": "composer/semver",
@@ -6552,6 +6552,76 @@
                 }
             ],
             "time": "2024-02-26T07:52:39+00:00"
+        },
+        {
+            "name": "symfony/sendgrid-mailer",
+            "version": "v7.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/sendgrid-mailer.git",
+                "reference": "24717c029524840c64aaa1ddc97185ae3cab1688"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/sendgrid-mailer/zipball/24717c029524840c64aaa1ddc97185ae3cab1688",
+                "reference": "24717c029524840c64aaa1ddc97185ae3cab1688",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.2",
+                "symfony/mailer": "^6.4|^7.0"
+            },
+            "conflict": {
+                "symfony/http-foundation": "<6.4",
+                "symfony/mime": "<6.4"
+            },
+            "require-dev": {
+                "symfony/http-client": "^6.4|^7.0",
+                "symfony/webhook": "^6.4|^7.0"
+            },
+            "type": "symfony-mailer-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Mailer\\Bridge\\Sendgrid\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Sendgrid Mailer Bridge",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/sendgrid-mailer/tree/v7.0.3"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-01-23T15:02:46+00:00"
         },
         {
             "name": "symfony/serializer",
