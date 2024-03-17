@@ -26,15 +26,19 @@ class EmailAlertChannel extends AbstractAlertChannel
     {
         $this->twig = $twig;
 
-        $this->checkOptions($options, ['emailAddresses', 'smtpHost', 'smtpUser', 'smtpPassword']);
+        if ( array_key_exists( 'dsn', $options ) ) {
+            $dsn = $options['dsn'];
+        } else {
+            $this->checkOptions($options, ['emailAddresses', 'smtpHost', 'smtpUser', 'smtpPassword']);
+
+            $dsn = 'smtp://' . $options['smtpUser'] . ':' . urlencode($options['smtpPassword']) . '@' . $options['smtpHost'] . ':587';
+        }
 
         if (array_key_exists('theme', $options)) {
             $this->theme = $options['theme'];
         }
 
         $this->emailAddresses = $options['emailAddresses'];
-
-        $dsn = 'smtp://' . $options['smtpUser'] . ':' . urlencode($options['smtpPassword']) . '@' . $options['smtpHost'] . ':587';
 
         $this->mailer = new Mailer(Transport::fromDsn($dsn));
     }
@@ -48,8 +52,8 @@ class EmailAlertChannel extends AbstractAlertChannel
         }
 
         $email = (new Email())
-            ->from('nils.langner@startwind.io')
-            ->to('nils.langner@startwind.io')
+            ->from('me@zeshanahmed.com')
+            ->to('premiumsrapidshares@gmail.com')
             ->bcc($this->emailAddresses[0])
             ->subject('Alert')
             ->text('This is a test email sent via Symfony Mailer.');
