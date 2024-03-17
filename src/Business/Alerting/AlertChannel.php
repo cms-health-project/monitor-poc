@@ -4,5 +4,7 @@ namespace App\Business\Alerting;
 
 interface AlertChannel
 {
-    public function sendAlert(array $healthCheckResult): void;
+    const CONSTRAINT_ON_CHANGE = 'status_change';
+
+    public function sendAlert(string $endpoint, array $healthCheckResult): void;
 }

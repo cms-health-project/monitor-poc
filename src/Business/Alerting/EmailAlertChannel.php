@@ -39,17 +39,13 @@ class EmailAlertChannel extends AbstractAlertChannel
         $this->mailer = new Mailer(Transport::fromDsn($dsn));
     }
 
-    public function sendAlert(array $healthCheckResult): void
+    public function sendAlert(string $endpoint, array $healthCheckResult): void
     {
-        var_dump($healthCheckResult);
-
         if ($healthCheckResult['status'] === HealthStatus::SUCCESS) {
             $content = $this->twig->render('alerts/emails/' . $this->theme . '/success.html.twig', [$healthCheckResult]);
         } else {
             $content = $this->twig->render('alerts/emails/' . $this->theme . '/failed.html.twig', [$healthCheckResult]);
         }
-
-        var_dump($content);
 
         $email = (new Email())
             ->from('nils.langner@startwind.io')

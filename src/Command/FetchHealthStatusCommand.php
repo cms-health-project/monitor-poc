@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Command;
 
+use App\Business\Alerting\AlertChannel;
 use App\Business\Alerting\AlertChannelFactory;
 use App\Business\Retriever\FileRetriever;
 use App\Business\Storage\FileStorage;
-use App\Health\HealthStatus;
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -52,16 +52,26 @@ class FetchHealthStatusCommand extends Command
                 'fetched' => time()
             ];
 
-            if ($array['status'] !== HealthStatus::SUCCESS) {
-                foreach ($alertingChannels as $alertingChannel) {
-                    $alertingChannel->sendAlert($array);
-                }
-            }
+            $this->sendAlerts($alertingChannels, AlertChannel::CONSTRAINT_ON_CHANGE, $endpoint, $array, $storage->getHealthCheckResult($endpoint));
 
             $storage->storeHealthCheckResult($endpoint, $array);
         }
 
         return Command::SUCCESS;
+    }
+
+    protected function sendAlerts(array $alertingChannels, string $endpoint, array $currentStatus, array $previousStatus): void
+    {
+        /** @var AlertChannel[] $channels */
+        $channels = [];
+
+        if ($currentStatus['status'] !== $previousStatus['status']) {
+            $channels = array_merge($channels, $alertingChannels[AlertChannel::CONSTRAINT_ON_CHANGE]);
+        }
+
+        foreach ($channels as $alertingChannel) {
+            $alertingChannel->sendAlert($endpoint, $currentStatus);
+        }
     }
 
     /**
@@ -74,7 +84,7 @@ class FetchHealthStatusCommand extends Command
         $channels = [];
 
         foreach ($config['alerting']['channels'] as $channel) {
-            $channels[] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options'], $this->twig);
+            $channels[$channel['constraint']][] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options'], $this->twig);
         }
 
         return $channels;
