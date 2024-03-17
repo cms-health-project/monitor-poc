@@ -8,6 +8,7 @@ use App\Business\Alerting\AlertChannel;
 use App\Business\Alerting\AlertChannelFactory;
 use App\Business\Retriever\FileRetriever;
 use App\Business\Storage\FileStorage;
+use App\Health\HealthStatus;
 use GuzzleHttp\Client;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -52,7 +53,7 @@ class FetchHealthStatusCommand extends Command
                 'fetched' => time()
             ];
 
-            $this->sendAlerts($alertingChannels, AlertChannel::CONSTRAINT_ON_CHANGE, $endpoint, $array, $storage->getHealthCheckResult($endpoint));
+            $this->sendAlerts($alertingChannels, $endpoint, $array, $storage->getHealthCheckResult($endpoint));
 
             $storage->storeHealthCheckResult($endpoint, $array);
         }
@@ -68,6 +69,12 @@ class FetchHealthStatusCommand extends Command
         if ($currentStatus['status'] !== $previousStatus['status']) {
             $channels = array_merge($channels, $alertingChannels[AlertChannel::CONSTRAINT_ON_CHANGE]);
         }
+
+        if ($currentStatus['status'] !== HealthStatus::SUCCESS) {
+            $channels = array_merge($channels, $alertingChannels[AlertChannel::CONSTRAINT_FAILED]);
+        }
+
+        $channels = array_merge($channels, $alertingChannels[AlertChannel::CONSTRAINT_ALL]);
 
         foreach ($channels as $alertingChannel) {
             $alertingChannel->sendAlert($endpoint, $currentStatus);
