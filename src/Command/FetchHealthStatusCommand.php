@@ -26,6 +26,7 @@ use Twig\Environment;
 class FetchHealthStatusCommand extends Command
 {
     protected Environment $twig;
+    private string $dashboardUrl;
 
     public function __construct(Environment $environment)
     {
@@ -88,6 +89,8 @@ class FetchHealthStatusCommand extends Command
     protected function getAlertingChannels(string $configFile): array
     {
         $config = Yaml::parse(file_get_contents($configFile));
+
+        $this->dashboardUrl = $config['alerting']['dashboardUrl'];
 
         $channels = [
             AlertChannel::CONSTRAINT_FAILED => [],
