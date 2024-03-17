@@ -8,7 +8,7 @@ abstract class AlertChannelFactory
     {
         switch ($type) {
             case EmailAlertChannel::ALERT_CHANNEL_IDENTIFIER:
-                return new EmailAlertChannel($options['emailAddresses']);
+                return new EmailAlertChannel($options);
             default:
                 throw new \RuntimeException('Unknown alerting type "' . $type . '"');
         }

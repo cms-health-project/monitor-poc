@@ -8,6 +8,10 @@ alerting:
     - type: email
       constraint: onStatusChange
       options:
+        smtpHost: smtps.udag.de
+        smtpUser: <username>
+        smtpPassword: "<password>"
         emailAddresses:
           - nils.langner@startwind.io
+          - maxi.langner@startwind.io
 

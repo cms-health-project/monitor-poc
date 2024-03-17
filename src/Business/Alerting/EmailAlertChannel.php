@@ -2,24 +2,38 @@
 
 namespace App\Business\Alerting;
 
-class EmailAlertChannel implements AlertChannel
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\Mime\Email;
+
+class EmailAlertChannel extends AbstractAlertChannel
 {
     const ALERT_CHANNEL_IDENTIFIER = 'email';
 
     private array $emailAddresses;
 
-    /**
-     * @param array $emailAddresses
-     */
-    public function __construct(array $emailAddresses)
+    private Mailer $mailer;
+
+    public function __construct(array $options)
     {
-        $this->emailAddresses = $emailAddresses;
+        $this->checkOptions($options, ['emailAddresses', 'smtpHost', 'smtpUser', 'smtpPassword']);
+
+        $this->emailAddresses = $options['emailAddresses'];
+
+        $dsn = 'smtp://' . $options['smtpUser'] . ':' . urlencode($options['smtpPassword']) . '@' . $options['smtpHost'] . ':587';
+
+        $this->mailer = new Mailer(Transport::fromDsn($dsn));
     }
 
     public function sendAlert(array $healthCheckResult): void
     {
-        foreach ($this->emailAddresses as $emailAddress) {
-            echo "send email to " . $emailAddress;
-        }
+        $email = (new Email())
+            ->from('nils.langner@startwind.io')
+            ->to('nils.langner@startwind.io')
+            ->bcc($this->emailAddresses[0])
+            ->subject('Alert')
+            ->text('This is a test email sent via Symfony Mailer.');
+
+        $this->mailer->send($email);
     }
 }

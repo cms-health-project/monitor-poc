@@ -27,3 +27,5 @@
 .idea
 
 _storage
+
+config/health.config.yaml
