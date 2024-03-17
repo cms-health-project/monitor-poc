@@ -1,2 +1,2 @@
 endpoints:
-  thewebhatesme: https://www.thewebhatesme.com/health.json
+  "www.thewebhatesme.com": https://www.thewebhatesme.com/health.json
