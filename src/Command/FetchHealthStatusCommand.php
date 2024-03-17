@@ -14,6 +14,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
+use Twig\Environment;
 
 #[AsCommand(
     name: 'app:health:fetch',
@@ -22,6 +23,14 @@ use Symfony\Component\Yaml\Yaml;
 )]
 class FetchHealthStatusCommand extends Command
 {
+    protected Environment $twig;
+
+    public function __construct(Environment $environment)
+    {
+        parent::__construct();
+        $this->twig = $environment;
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $configFile = __DIR__ . '/../../config/health.config.yaml';
@@ -45,7 +54,7 @@ class FetchHealthStatusCommand extends Command
 
             if ($array['status'] !== HealthStatus::SUCCESS) {
                 foreach ($alertingChannels as $alertingChannel) {
-                    $alertingChannel->sendAlert($alertingChannels);
+                    $alertingChannel->sendAlert($array);
                 }
             }
 
@@ -65,7 +74,7 @@ class FetchHealthStatusCommand extends Command
         $channels = [];
 
         foreach ($config['alerting']['channels'] as $channel) {
-            $channels[] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options']);
+            $channels[] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options'], $this->twig);
         }
 
         return $channels;

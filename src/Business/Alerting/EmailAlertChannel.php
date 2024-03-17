@@ -2,9 +2,11 @@
 
 namespace App\Business\Alerting;
 
+use App\Health\HealthStatus;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mime\Email;
+use Twig\Environment;
 
 class EmailAlertChannel extends AbstractAlertChannel
 {
@@ -12,11 +14,23 @@ class EmailAlertChannel extends AbstractAlertChannel
 
     private array $emailAddresses;
 
-    private Mailer $mailer;
+    private string $theme = 'default';
 
-    public function __construct(array $options)
+    private Mailer $mailer;
+    /**
+     * @var \Twig\Environment
+     */
+    private Environment $twig;
+
+    public function __construct(array $options, Environment $twig)
     {
+        $this->twig = $twig;
+
         $this->checkOptions($options, ['emailAddresses', 'smtpHost', 'smtpUser', 'smtpPassword']);
+
+        if (array_key_exists('theme', $options)) {
+            $this->theme = $options['theme'];
+        }
 
         $this->emailAddresses = $options['emailAddresses'];
 
@@ -27,6 +41,16 @@ class EmailAlertChannel extends AbstractAlertChannel
 
     public function sendAlert(array $healthCheckResult): void
     {
+        var_dump($healthCheckResult);
+
+        if ($healthCheckResult['status'] === HealthStatus::SUCCESS) {
+            $content = $this->twig->render('alerts/emails/' . $this->theme . '/success.html.twig', [$healthCheckResult]);
+        } else {
+            $content = $this->twig->render('alerts/emails/' . $this->theme . '/failed.html.twig', [$healthCheckResult]);
+        }
+
+        var_dump($content);
+
         $email = (new Email())
             ->from('nils.langner@startwind.io')
             ->to('nils.langner@startwind.io')
