@@ -90,7 +90,7 @@ class FetchHealthStatusCommand extends Command
     {
         $config = Yaml::parse(file_get_contents($configFile));
 
-        $this->dashboardUrl = $config['alerting']['dashboardUrl'];
+        $dashboardUrl = $config['alerting']['dashboardUrl'];
 
         $channels = [
             AlertChannel::CONSTRAINT_FAILED => [],
@@ -99,6 +99,12 @@ class FetchHealthStatusCommand extends Command
         ];
 
         foreach ($config['alerting']['channels'] as $channel) {
+            $options = $channel['options'];
+
+            if(!array_key_exists('dashboardUrl', $options)) {
+                $options['dashboardUrl'] = $dashboardUrl;
+            }
+
             $channels[$channel['constraint']][] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options'], $this->twig);
         }
 
