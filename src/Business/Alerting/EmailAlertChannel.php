@@ -17,16 +17,22 @@ class EmailAlertChannel extends AbstractAlertChannel
     private string $theme = 'default';
 
     private Mailer $mailer;
-    /**
-     * @var \Twig\Environment
-     */
+
+    private array $defaultOptions = [
+        'subject' => [
+            'failed' => "Ohh no!!"
+        ]
+    ];
+
     private Environment $twig;
 
     public function __construct(array $options, Environment $twig)
     {
+        $options = array_merge_recursive($this->defaultOptions, $options);
+
         $this->twig = $twig;
 
-        if ( array_key_exists( 'dsn', $options ) ) {
+        if (array_key_exists('dsn', $options)) {
             $dsn = $options['dsn'];
         } else {
             $this->checkOptions($options, ['emailAddresses', 'smtpHost', 'smtpUser', 'smtpPassword']);
