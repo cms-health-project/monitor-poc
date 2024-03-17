@@ -6,7 +6,7 @@ namespace App\Command;
 
 use App\Business\Alerting\AlertChannel;
 use App\Business\Alerting\AlertChannelFactory;
-use App\Business\Retriever\FileRetriever;
+use App\Business\Exception\ConfigurationException;
 use App\Business\Retriever\YamlRetriever;
 use App\Business\Storage\FileStorage;
 use App\Health\HealthStatus;
@@ -90,18 +90,26 @@ class FetchHealthStatusCommand extends Command
     {
         $config = Yaml::parse(file_get_contents($configFile));
 
-        $dashboardUrl = $config['alerting']['dashboardUrl'];
-
         $channels = [
             AlertChannel::CONSTRAINT_FAILED => [],
             AlertChannel::CONSTRAINT_ALL => [],
             AlertChannel::CONSTRAINT_ON_CHANGE => [],
         ];
 
+        if (!array_key_exists('alerting', $config) || !array_key_exists('channels', $config['alerting'])) {
+            return $channels;
+        }
+
+        if (!array_key_exists('dashboardUrl', $config['alerting'])) {
+            throw new ConfigurationException('When alerting channels are defined then the "dashboardUrl" field is mandatory');
+        }
+
+        $dashboardUrl = $config['alerting']['dashboardUrl'];
+        
         foreach ($config['alerting']['channels'] as $channel) {
             $options = $channel['options'];
 
-            if(!array_key_exists('dashboardUrl', $options)) {
+            if (!array_key_exists('dashboardUrl', $options)) {
                 $options['dashboardUrl'] = $dashboardUrl;
             }
 
