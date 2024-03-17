@@ -7,6 +7,7 @@ namespace App\Command;
 use App\Business\Alerting\AlertChannel;
 use App\Business\Alerting\AlertChannelFactory;
 use App\Business\Retriever\FileRetriever;
+use App\Business\Retriever\YamlRetriever;
 use App\Business\Storage\FileStorage;
 use App\Health\HealthStatus;
 use GuzzleHttp\Client;
@@ -36,7 +37,7 @@ class FetchHealthStatusCommand extends Command
     {
         $configFile = __DIR__ . '/../../config/health.config.yaml';
 
-        $retriever = new FileRetriever(__DIR__ . '/../../config/endpoints.csv');
+        $retriever = new YamlRetriever(__DIR__ . '/../../config/endpoints.yaml');
 
         $storage = new FileStorage(__DIR__ . '/../../_storage');
 
@@ -44,7 +45,7 @@ class FetchHealthStatusCommand extends Command
 
         $client = new Client();
 
-        foreach ($retriever->getEndpoints() as $endpoint) {
+        foreach ($retriever->getEndpoints() as $key => $endpoint) {
             $response = $client->get($endpoint);
 
             $array = json_decode((string)$response->getBody(), true);
@@ -53,7 +54,7 @@ class FetchHealthStatusCommand extends Command
                 'fetched' => time()
             ];
 
-            $this->sendAlerts($alertingChannels, $endpoint, $array, $storage->getHealthCheckResult($endpoint));
+            $this->sendAlerts($alertingChannels, $key, $array, $storage->getHealthCheckResult($endpoint));
 
             $storage->storeHealthCheckResult($endpoint, $array);
         }

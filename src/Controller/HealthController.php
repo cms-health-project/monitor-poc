@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Business\Retriever\FileRetriever;
+use App\Business\Retriever\YamlRetriever;
 use App\Business\Storage\FileStorage;
 use App\Health\HealthStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,12 +14,13 @@ class HealthController extends AbstractController
     #[Route('api/v1/user/{userId}', methods: ['GET'])]
     public function getHealthStatusForUser(string $userId = ""): JsonResponse
     {
-        $retriever = new FileRetriever(__DIR__ . '/../../config/endpoints.csv');
+        // $retriever = new FileRetriever(__DIR__ . '/../../config/endpoints.csv');
+        $retriever = new YamlRetriever(__DIR__ . '/../../config/endpoints.yaml');
         $storage = new FileStorage(__DIR__ . '/../../_storage');
 
         $healthStatuses = [];
 
-        foreach ($retriever->getEndpoints() as $endpoint) {
+        foreach ($retriever->getEndpoints() as $key => $endpoint) {
             $status = $storage->getHealthCheckResult($endpoint);
 
             foreach ($status['checks'] as $checkName => $checkList) {
@@ -30,7 +31,7 @@ class HealthController extends AbstractController
                 }
             }
 
-            $healthStatuses[$endpoint] = ['status' => $status, 'errors' => $errorMessages];
+            $healthStatuses[$endpoint] = ['status' => $status, 'errors' => $errorMessages, 'name' => $key];
         }
 
         return new JsonResponse(['status' => 'success', 'message' => 'Health status fetched for user ' . $userId, 'data' => $healthStatuses]);
