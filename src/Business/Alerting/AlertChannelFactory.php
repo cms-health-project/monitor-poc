@@ -11,6 +11,8 @@ abstract class AlertChannelFactory
         switch ($type) {
             case EmailAlertChannel::ALERT_CHANNEL_IDENTIFIER:
                 return new EmailAlertChannel($options, $twig);
+            case EchoAlertChannel::ALERT_CHANNEL_IDENTIFIER:
+                return new EchoAlertChannel();
             default:
                 throw new \RuntimeException('Unknown alerting type "' . $type . '"');
         }
