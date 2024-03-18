@@ -16,7 +16,17 @@ class YamlRetriever implements Retriever
 
     public function getEndpoints(): array
     {
-        return $this->endpoints;
+        $endpoints = [];
+
+        foreach ($this->endpoints as $key => $endpoint) {
+            if (is_array($endpoint)) {
+                $endpoints[$key] = new Endpoint($endpoint['url'], $endpoint['bearer']);
+            } else {
+                $endpoints[$key] = new Endpoint($endpoint);
+            }
+        }
+
+        return $endpoints;
     }
 
 }

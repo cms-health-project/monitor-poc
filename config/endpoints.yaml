@@ -1,2 +1,5 @@
 endpoints:
   "www.thewebhatesme.com": https://www.thewebhatesme.com/health.json
+  "blog.leankoala.com":
+    url: https://www.thewebhatesme.com/health.json
+    bearer: 1234

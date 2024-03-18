@@ -47,7 +47,7 @@ class FetchHealthStatusCommand extends Command
         $client = new Client();
 
         foreach ($retriever->getEndpoints() as $key => $endpoint) {
-            $response = $client->get($endpoint);
+            $response = $client->send($endpoint->toRequest());
 
             $array = json_decode((string)$response->getBody(), true);
 
@@ -55,20 +55,20 @@ class FetchHealthStatusCommand extends Command
                 'fetched' => time()
             ];
 
-            $this->sendAlerts($alertingChannels, $key, $array, $storage->getHealthCheckResult($endpoint));
+            $this->sendAlerts($alertingChannels, $key, $array, $storage->getHealthCheckResult($key));
 
-            $storage->storeHealthCheckResult($endpoint, $array);
+            $storage->storeHealthCheckResult($key, $array);
         }
 
         return Command::SUCCESS;
     }
 
-    protected function sendAlerts(array $alertingChannels, string $endpoint, array $currentStatus, array $previousStatus): void
+    protected function sendAlerts(array $alertingChannels, string $endpoint, array $currentStatus, array|false $previousStatus): void
     {
         /** @var AlertChannel[] $channels */
         $channels = [];
 
-        if ($currentStatus['status'] !== $previousStatus['status']) {
+        if ($previousStatus && $currentStatus['status'] !== $previousStatus['status']) {
             $channels = array_merge($channels, $alertingChannels[AlertChannel::CONSTRAINT_ON_CHANGE]);
         }
 
@@ -105,12 +105,11 @@ class FetchHealthStatusCommand extends Command
         }
 
         $dashboardUrl = $config['alerting']['dashboardUrl'];
-        
+
         foreach ($config['alerting']['channels'] as $channel) {
             $options = $channel['options'];
 
             if (!array_key_exists('dashboardUrl', $options)) {
-                $options['dashboardUrl'] = $dashboardUrl;
             }
 
             $channels[$channel['constraint']][] = AlertChannelFactory::getAlertingChannel($channel['type'], $channel['options'], $this->twig);

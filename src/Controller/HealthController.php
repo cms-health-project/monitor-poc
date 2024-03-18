@@ -21,7 +21,7 @@ class HealthController extends AbstractController
         $healthStatuses = [];
 
         foreach ($retriever->getEndpoints() as $key => $endpoint) {
-            $status = $storage->getHealthCheckResult($endpoint);
+            $status = $storage->getHealthCheckResult($key);
 
             foreach ($status['checks'] as $checkName => $checkList) {
                 foreach ($checkList as $check) {
@@ -31,7 +31,7 @@ class HealthController extends AbstractController
                 }
             }
 
-            $healthStatuses[$endpoint] = ['status' => $status, 'errors' => $errorMessages, 'name' => $key];
+            $healthStatuses[$key] = ['status' => $status, 'errors' => $errorMessages, 'name' => $key];
         }
 
         return new JsonResponse(['status' => 'success', 'message' => 'Health status fetched for user ' . $userId, 'data' => $healthStatuses]);
