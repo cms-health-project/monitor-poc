@@ -18,9 +18,9 @@ class HealthController extends AbstractController
         $retriever = new YamlRetriever(__DIR__ . '/../../config/endpoints.yaml');
         $storage = new FileStorage(__DIR__ . '/../../_storage');
 
-        $healthStatuses = [];
 
         foreach ($retriever->getEndpoints() as $key => $endpoint) {
+            $healthStatuses = [];
             $status = $storage->getHealthCheckResult($key);
 
             foreach ($status['checks'] as $checkName => $checkList) {
