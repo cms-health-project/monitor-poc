@@ -29,7 +29,7 @@ class Endpoint
     public function toRequest(): Request
     {
         if ($this->token) {
-            $headers = ['Authorization' => 'Bearer: ' . $this->token];
+            $headers = ['Authorization' => $this->token];
             return new Request('GET', new Uri($this->url), ['headers' => $headers]);
         } else {
             return new Request('GET', new Uri($this->url));
