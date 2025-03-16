@@ -45,7 +45,7 @@ class FetchHealthStatusCommand extends Command
 
             if ($array['status'] !== HealthStatus::SUCCESS) {
                 foreach ($alertingChannels as $alertingChannel) {
-                    $alertingChannel->sendAlert($alertingChannels);
+                    //$alertingChannel->sendAlert($alertingChannels);
                 }
             }
 
