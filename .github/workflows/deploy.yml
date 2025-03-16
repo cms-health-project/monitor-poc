@@ -20,4 +20,4 @@ jobs:
       - name: "Checkout latest state on server"
         shell: bash
         run: |
-          ssh -F /dev/null -o StrictHostKeyChecking=no cloudfest@cloudfest.buerk.tech "cd projects/api-monitor ; git fetch --all ; git checkout main ; git pull --rebase"
+          ssh -F /dev/null -o StrictHostKeyChecking=no cloudfest@cloudfest.buerk.tech "cd projects/api-monitor ; git fetch --all ; git checkout develop ; git pull --rebase"
