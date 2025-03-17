@@ -20,17 +20,20 @@ class HealthController extends AbstractController
         $healthStatuses = [];
 
         foreach ($endpoints as $label => $endpoint) {
-            $status = $storage->getHealthCheckResult($endpoint);
+            $status = $storage->getHealthCheckResult($label);
+            if (!is_array($status) || $status === []) {
+                continue;
+            }
 
             foreach ($status['checks'] as $checkName => $checkList) {
                 foreach ($checkList as $check) {
                     if ($check['status'] !== HealthStatus::SUCCESS) {
-                        $errorMessages[] = $checkName . ': ' . $check['output'];
+                        $errorMessages[] = $checkName . ': ' . ($check['output'] ?? '-- missing error output --');
                     }
                 }
             }
 
-            $healthStatuses[$endpoint] = ['status' => $status, 'errors' => $errorMessages];
+            $healthStatuses[$endpoint['url']] = ['status' => $status, 'errors' => $errorMessages];
         }
 
         return new JsonResponse(['status' => 'success', 'message' => 'Health status fetched for user ' . $userId, 'data' => $healthStatuses]);
