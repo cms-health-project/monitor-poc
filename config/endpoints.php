@@ -30,4 +30,12 @@ return [
             'Content-Type' => 'application/json',
         ],
     ],
+    'sulu_health_check_endpoint_demo_1' => [
+        'method' => 'GET',
+        'url' => 'https://sulu.cloudfest.buerk.tech/health/status', //'https://sulu.test/cms-health/health-check',
+        'headers' => [
+            'Content-Type' => 'application/json',
+            'Authorization' => 'Bearer this_is-a^super1111OneSecurePasswort^WToken',
+        ],
+    ]
 ];
