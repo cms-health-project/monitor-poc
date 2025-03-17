@@ -20,6 +20,7 @@ class HealthController extends AbstractController
         $healthStatuses = [];
 
         foreach ($endpoints as $label => $endpoint) {
+            $errorMessages = [];
             $status = $storage->getHealthCheckResult($label);
             if (!is_array($status) || $status === []) {
                 continue;
@@ -28,7 +29,7 @@ class HealthController extends AbstractController
             foreach ($status['checks'] as $checkName => $checkList) {
                 foreach ($checkList as $check) {
                     if ($check['status'] !== HealthStatus::SUCCESS) {
-                        $errorMessages[] = $checkName . ': ' . ($check['output'] ?? '-- missing error output --');
+                        $errorMessages[] = $checkName . ': ' . ($check['output'] ?? '');
                     }
                 }
             }
