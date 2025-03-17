@@ -23,4 +23,11 @@ return [
             'x-api-key' => '301ad60f0a4483644b60aa4bf8c901f9dce3fc1e',
         ],
     ],
+    'wordpress_plugin_endpoint_demo' => [
+        'method' => 'GET',
+        'url' => 'https://wordpress.cloudfest.buerk.tech/wp-json/cms-health/v1/health',
+        'headers' => [
+            'Content-Type' => 'application/json',
+        ],
+    ],
 ];
