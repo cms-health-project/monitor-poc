@@ -14,12 +14,12 @@ class HealthController extends AbstractController
     #[Route('api/v1/user/{userId}', methods: ['GET'])]
     public function getHealthStatusForUser(string $userId = ""): JsonResponse
     {
-        $retriever = new FileRetriever(__DIR__ . '/../../config/endpoints.csv');
+        $endpoints = include __DIR__ . '/../../config/endpoints.php';
         $storage = new FileStorage(__DIR__ . '/../../_storage');
 
         $healthStatuses = [];
 
-        foreach ($retriever->getEndpoints() as $endpoint) {
+        foreach ($endpoints as $label => $endpoint) {
             $status = $storage->getHealthCheckResult($endpoint);
 
             foreach ($status['checks'] as $checkName => $checkList) {

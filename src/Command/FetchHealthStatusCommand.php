@@ -9,6 +9,7 @@ use App\Business\Retriever\FileRetriever;
 use App\Business\Storage\FileStorage;
 use App\Health\HealthStatus;
 use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -25,8 +26,7 @@ class FetchHealthStatusCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $configFile = __DIR__ . '/../../config/health.config.yaml';
-
-        $retriever = new FileRetriever(__DIR__ . '/../../config/endpoints.csv');
+        $endpoints = include __DIR__ . '/../../config/endpoints.php';
 
         $storage = new FileStorage(__DIR__ . '/../../_storage');
 
@@ -34,9 +34,26 @@ class FetchHealthStatusCommand extends Command
 
         $client = new Client();
 
-        foreach ($retriever->getEndpoints() as $endpoint) {
-            $response = $client->get($endpoint);
+        foreach ($endpoints as $label => $endpoint) {
 
+            $method = $endpoint['method'] ?? 'GET';
+            $options = [
+                RequestOptions::JSON => [],
+            ];
+            if (isset($endpoint['headers'])
+                && is_array($endpoint['headers'])
+                && $endpoint['headers'] !== []
+            ) {
+                $options[RequestOptions::HEADERS] = $endpoint['headers'];
+            }
+            if (isset($endpoint['payload'])
+                && is_array($endpoint['payload'])
+                && $endpoint['payload'] !== []
+                && $method === 'POST'
+            ) {
+                $options[RequestOptions::JSON] = $endpoint['payload'];
+            }
+            $response = $client->request($method, $endpoint['url'], $options);
             $array = json_decode((string)$response->getBody(), true);
 
             $array['_internal'] = [
@@ -49,7 +66,7 @@ class FetchHealthStatusCommand extends Command
                 }
             }
 
-            $storage->storeHealthCheckResult($endpoint, $array);
+            $storage->storeHealthCheckResult($label, $array);
         }
 
         return Command::SUCCESS;
